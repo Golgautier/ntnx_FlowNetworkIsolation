@@ -1,0 +1,30 @@
+
+
+# Create Security policy for isolation
+resource "nutanix_network_security_rule" "SecRule_2" {
+
+  # Name & Description
+  name            = "OCP_Isolation_Prod-Preproduction"
+  description     = "OCP cluster isolation"
+
+  #Mode Monitoring
+  isolation_rule_action = "MONITOR"
+
+  #1st category to isolate
+  isolation_rule_first_entity_filter_kind_list  = ["vm"]
+  isolation_rule_first_entity_filter_type = "CATEGORIES_MATCH_ALL"
+  isolation_rule_first_entity_filter_params {
+    name   = "OCP_Env"
+    values = ["Production"]
+  }
+
+  #2nd category to isolate
+  isolation_rule_second_entity_filter_kind_list = ["vm"]
+  isolation_rule_second_entity_filter_type = "CATEGORIES_MATCH_ALL"
+  isolation_rule_second_entity_filter_params {
+    name   = "OCP_Env"
+    values = ["Preproduction"]
+  }
+  
+  depends_on = [nutanix_category_value.Master, nutanix_category_value.Worker,nutanix_category_value.Recette,nutanix_category_value.Prod]
+}
